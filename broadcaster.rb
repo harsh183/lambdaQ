@@ -1,19 +1,18 @@
 # require 'bundler/setup'
 require 'bunny'
 require 'json'
+load 'utility.rb'
 
 # TODO: Make this sinatra supports and take args from the web
 # TODO: Look up RabbitMQ http support
 
-amqp_conn = Bunny.new
-amqp_conn.start
-channel = amqp_conn.create_channel
+channel = set_up_channel
 
 EXCHANGE_NAME_FOR_FUNCTION = 'submitted_inputs'
 exchange_for_function = channel.fanout(EXCHANGE_NAME_FOR_FUNCTION)
 
-# TODO: Unhardcode this (take from the url) - perhaps as json and/or params - whichever is simpler
-payload = { 'x': 10 }
+# INSERT PAYLOAD GENERATION HERE
+payload["time"] = Time.now.to_s
 
 exchange_for_function.publish(payload.to_json)
 

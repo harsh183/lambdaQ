@@ -11,7 +11,7 @@ channel = set_up_channel
 EXCHANGE_NAME_FOR_FUNCTION = 'submitted_inputs'
 exchange_for_function = channel.fanout(EXCHANGE_NAME_FOR_FUNCTION)
 
-# INSERT PAYLOAD
+payload = {"x"=>10, "y"=>10, "z"=>10}
 payload["time"] = Time.now.to_s
 
 exchange_for_function.publish(payload.to_json)

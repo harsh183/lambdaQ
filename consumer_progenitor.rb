@@ -2,7 +2,11 @@
 require 'bunny'
 require 'json'
 
-# INSERT THE FUNCTION HERE
+
+def add(x, y, z)
+  x + y + z
+end
+
 
 channel = set_up_channel
 
@@ -24,7 +28,10 @@ queue_inputs_to_run.subscribe(block: true) do |delivery_info, metadata, payload|
 
   check_should_duplicate(ms_time_spent, target_time)
   
-  # INSERT IO
+  x = parsed_payload['x']
+y = parsed_payload['y']
+z = parsed_payload['z']
+output = add(x, y, z)
   
   p "#{parsed_payload} became #{output}"
   output_json = output.to_json

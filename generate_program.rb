@@ -3,22 +3,32 @@
 # TODO: Law of Demeter
 
 def generate_program(function)
-  generate_program_submit(function)
-  generate_task_queue_file(function)
+  File.write("submit.rb", generate_program_submit(function))
+  File.write("consumer_progenitor.rb", generate_queue_progenitor(function))
+  File.write("consumer_duplicate.rb", generate_queue_duplicate(function))
 end
 
 def generate_program_submit(function)
-  File.write('broadcaster.rb', read_submit_template)
+  program = read_submit_template
+
+  function_params = extract_function_params(function)
+  payload_string = "payload = #{create_payload(function_params).inspect}"
+  program = program.gsub("# INSERT PAYLOAD", payload_string)
 end
 
 # String sub for now, maybe come up with a better way to do it later
-def generate_task_queue_file(function)
+def generate_queue_progenitor(function)
   function_marker = "# INSERT THE FUNCTION HERE"
   program = read_task_queue
   program = program.gsub(function_marker, function)
-  File.write('worker.rb', program)
+  program = program.gsub("# INSERT IO", generate_io(function))
 end
 
+def generate_queue_duplicate(function)
+  program = generate_queue_progenitor(function)
+  program.sub("# INSERT TEARDOWN", "check_should_terminate(ms_time_spent, target_time")
+end
+ 
 def extract_function_name(function)
   signature = extract_function_signature(function)
   signature.split(/[( ]/)[0]
@@ -41,6 +51,13 @@ def extract_function_signature(function)
   declaration_lines[0].split('def')[1].strip
 end
 
+def generate_io(function)
+  function_name = extract_function_name(function)
+  function_params = extract_function_params(function)
+  parsed_payload = create_payload(function_params)
+  generate_call_for_function(function_name, parsed_payload, function_params)
+end
+
 # No parms?
 def create_payload(function_params)
   function_params.map do |param_name|
@@ -58,7 +75,7 @@ def generate_call_for_function(function_name, param_hash, function_params)
   end
 
   joined_param_string = function_params.join(', ')
-  output += "result = #{function_name}(#{joined_param_string})"
+  output += "output = #{function_name}(#{joined_param_string})"
   return output
 end
 
@@ -79,8 +96,6 @@ def add(x, y, z)
   x + y + z
 end
 "
+generate_program(program)
 
-function_name = extract_function_name(program)
-function_params = extract_function_params(program)
-parsed_payload = create_payload(function_params)
-p generate_call_for_function(function_name, parsed_payload, function_params)
+
