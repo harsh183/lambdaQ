@@ -2,7 +2,11 @@
 require 'bunny'
 require 'json'
 
-# INSERT THE FUNCTION HERE
+
+def double(x)
+  x * 2
+end
+
 
 amqp_conn = Bunny.new
 amqp_conn.start

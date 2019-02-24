@@ -1,9 +1,10 @@
 require 'sinatra'
+load 'generate_program.rb'
 
 # TODO: Make a program that composes the api request - another ruby program
 
 def save_program(program_text)
-  File.write('programs/function.rb', program_text)
+  generate_program(program_text)
   # TODO: Better file and folder structure for multiple users etc
   # A database maybe?
 end   
@@ -25,3 +26,4 @@ end
 # TODO: Construct the json messaging based on the function parameters
 # TODO: Expose Some url to call the function
 
+# Add the rabbit startup scripts to the repo
